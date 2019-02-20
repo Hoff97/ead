@@ -90,58 +90,6 @@ class RedBlackNode[A](var key: Int, val value: A, var left: Option[RedBlackNode[
       ((z.isLeftChild && parent.isRightChild) || (z.isRightChild && parent.isLeftChild))
   }
 
-  def delete(): Unit = {
-    var r: Option[RedBlackNode[A]] = None
-    var succ: Option[RedBlackNode[A]] = None
-    var p: Option[RedBlackNode[A]] = None
-    if(this.right.isDefined) {
-      val m = this.right.get.min
-      val r = Some(m)
-      succ = m.right
-      p = m.parent
-      m.spliceOut()
-    } else if(this.left.isDefined) {
-      val m = this.left.get.max
-      val r = Some(m)
-      succ = m.left
-      p = m.parent
-      m.spliceOut()
-    }
-
-    r match {
-      case Some(rep) => {
-        rep.left = this.left
-        rep.left.foreach(_.parent = Some(rep))
-
-        rep.right = this.right
-        rep.right.foreach(_.parent = Some(rep))
-
-        val oldColor = rep.color
-
-        val lc = this.isLeftChild
-        rep.parent = this.parent
-        if(lc) rep.parent.foreach(_.left = Some(rep)) else rep.parent.foreach(_.right = Some(rep))
-        rep.color = this.color
-
-        if(oldColor == Color.Black) {
-          fixupDelete(succ, p)
-        }
-      }
-      case None => {
-        // TODO: Probably done?
-      }
-    }
-  }
-
-  protected def fixupDelete(z: Option[RedBlackNode[A]], parent: Option[RedBlackNode[A]]): Unit = {
-    if(z.isDefined && z.get.color == Color.Red) {
-      z.get.color = Color.Black
-    } else if (parent.isDefined) {
-      val p = parent.get
-      //TODO
-    }
-  }
-
   def spliceOut(): Unit = {
     if(this.degree == 2) {
       throw new RuntimeException("Cant splice out element with two children")
